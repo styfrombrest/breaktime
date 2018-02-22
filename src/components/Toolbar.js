@@ -5,7 +5,7 @@ import Text from './TextRegular';
 
 const clockIcon = require('./../../public/clock_icon.png');
 
-const ToolbarWrapper = styled.View`
+const ToolbarWrapper = styled(View)`
   flex-direction: row;
   align-items: center;
   background-color: black;
@@ -13,19 +13,19 @@ const ToolbarWrapper = styled.View`
   height: 56;
 `;
 
-const TextContainer = styled.View`
+const TextContainer = styled(View)`
   flex: 1;
   flex-direction: row;
   align-items: flex-start;
 `;
 
-const LogoText = styled.Text`
+const LogoText = styled(Text)`
   color: white;
   font-size: 24;
   padding-left: 10;
 `;
 
-const Logo = styled.Image`
+const Logo = styled(Image)`
   width: 48;
   height: 48;
 `;
