@@ -1,4 +1,4 @@
-import React, { Component } from 'react';
+import React from 'react';
 import styled from 'styled-components';
 import { Image, View } from 'react-native';
 import Text from './TextRegular';
@@ -30,17 +30,13 @@ const Logo = styled(Image)`
   height: 48;
 `;
 
-export default class Toolbar extends Component {
-  render() {
-    return (
-      <ToolbarWrapper>
-        <View>
-          <Logo source={clockIcon} />
-        </View>
-        <TextContainer>
-          <LogoText>Break Time App</LogoText>
-        </TextContainer>
-      </ToolbarWrapper>
-    );
-  }
-}
+export default () => (
+  <ToolbarWrapper>
+    <View>
+      <Logo source={clockIcon} />
+    </View>
+    <TextContainer>
+      <LogoText>Break Time App</LogoText>
+    </TextContainer>
+  </ToolbarWrapper>
+);

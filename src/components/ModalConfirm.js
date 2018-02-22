@@ -35,20 +35,14 @@ const Title = styled(Text)`
 const ModalConfirm = (props) => {
   const { visible, confirmModal, closeModal } = props;
   return (
-    <Modal
-      animationType="slide"
-      presentationType="fullScreen"
-      transparent
-      visible={visible}
-      {...props}
-    >
+    <Modal animationType="fade" presentationType="fullScreen" transparent visible={visible} {...props}>
       <ModalWrapper>
         <Container>
           <Title>Relax time has been ended.</Title>
           <Text>Do you want to start working again? :)</Text>
           <ButtonContainer>
-            <FormButton onPress={confirmModal} title="Yes, please" />
-            <FormButton onPress={closeModal} title="No, thanks" color="#841584" />
+            <FormButton onPress={confirmModal} title="Yes" />
+            <FormButton onPress={closeModal} title="No" color="#841584" />
           </ButtonContainer>
         </Container>
       </ModalWrapper>

@@ -3,6 +3,7 @@ import styled from 'styled-components';
 import { View, Vibration, Switch, Dimensions } from 'react-native';
 import BackgroundTimer from 'react-native-background-timer';
 
+import { setPushNotification, clearPushNotifications } from './src/components/PushNotification';
 import Toolbar from './src/components/Toolbar';
 import Text from './src/components/TextRegular';
 import FormInput from './src/components/FormInput';
@@ -11,7 +12,7 @@ import ModalConfirmRepeat from './src/components/ModalConfirm';
 import TimerDisplay from './src/components/TimerDisplay';
 import { isInt, isPortrait, getSecondsFromMinutes } from './src/utils';
 
-const defaults = {
+const DEFAULTS = {
   workTime: 1,
   relaxTime: 1,
 };
@@ -35,14 +36,14 @@ const ContentContainer = styled(View)`
 
 const TimerContainer = styled(ContentContainer)`
   align-items: center;
-  justify-content: center;
-  flex: 1.7;
+  justify-content: flex-start;
+  flex: 1.4;
 `;
 
 const ButtonsContainer = styled(View)`
   flex-direction: row;
   align-items: center;
-  flex: 1.5;
+  height: 80;
 `;
 
 const SwitchContainer = styled(View)`
@@ -61,10 +62,10 @@ export default class App extends Component {
       modalVisible: false,
 
       ticker: null,
-      tickerWork: 0,
-      tickerRelax: 0,
-      workInterval: defaults.workTime,
-      relaxInterval: defaults.relaxTime,
+      tickerFunc: null,
+      workInterval: DEFAULTS.workTime,
+      relaxInterval: DEFAULTS.relaxTime,
+      pushNotificationId: String(Date.now()).substring(6),
     };
 
     // Orientation changing listener
@@ -75,84 +76,72 @@ export default class App extends Component {
     });
   }
 
-  setDefaultTimers = () =>
-    this.setState({ relaxInterval: defaults.relaxTime, workInterval: defaults.workTime });
+  setDefaultTimers = () => {
+    this.setState({
+      relaxInterval: DEFAULTS.relaxTime,
+      workInterval: DEFAULTS.workTime,
+    });
+  };
 
-  // TODO: refactoring this.state...
   Timer = () => {
-    if (!this.state.ticker) {
+    const { workInterval, relaxInterval, pushNotificationId } = this.state;
+    if (!this.state.tickerFunc) {
       // start timer
-      const ticker = BackgroundTimer.setInterval(() => {
-        if (this.state.tickerWork > 0) {
-          // ticking
-          this.setState({ tickerWork: this.state.tickerWork - 1 });
-        } else {
-          // end
-          if (this.state.silentMode) {
-            this.vibrate([100, 200, 100, 200, 100, 200]);
-          }
-          BackgroundTimer.clearInterval(this.state.ticker);
+      const tickerFunc = BackgroundTimer.setInterval(() => {
+        if (this.state.ticker.length > 0) {
+          const { ticker } = this.state;
 
-          this.RelaxTimer();
-          this.setState({ ticker: 'relax' });
+          // ticking
+          ticker[0] -= 1;
+          if (ticker[0] < 0) {
+            // period ended, notify & switching to next
+            ticker.shift();
+
+            if (ticker.length) {
+              // relax time notification
+              this.vibrate(500); // fix for A 7.0
+              setPushNotification(pushNotificationId, 'Working time is over, but relax time is started!', this.state.silentMode);
+            }
+          }
+          this.setState({ ticker });
+        } else {
+          // periods are over, notify & clearing
+          this.vibrate(1000); // fix for A 7.0
+          setPushNotification(pushNotificationId, 'Relax time is over.', this.state.silentMode);
+          BackgroundTimer.clearInterval(this.state.tickerFunc);
+          this.setState({ ticker: null, tickerFunc: null, modalVisible: true });
         }
       }, 1000);
 
       this.setState({
-        tickerWork: getSecondsFromMinutes(this.state.workInterval),
-        tickerRelax: getSecondsFromMinutes(this.state.relaxInterval),
-        ticker,
+        ticker: [getSecondsFromMinutes(workInterval), getSecondsFromMinutes(relaxInterval)],
+        tickerFunc,
       });
     } else {
-      // stopping timer
-      BackgroundTimer.clearInterval(this.state.ticker);
+      // User stopped timer, clearing
+      clearPushNotifications();
+      BackgroundTimer.clearInterval(this.state.tickerFunc);
       this.setState({
         ticker: null,
-        tickerWork: getSecondsFromMinutes(this.state.workInterval),
-        tickerRelax: getSecondsFromMinutes(this.state.relaxInterval),
+        tickerFunc: null,
       });
     }
   };
 
-  // TODO: refactoring
-  RelaxTimer = () => {
-    // start timer
-    const ticker = BackgroundTimer.setInterval(() => {
-      if (this.state.tickerRelax > 0) {
-        // ticking
-        this.setState({ tickerRelax: this.state.tickerRelax - 1 });
-      } else {
-        // end
-        if (this.state.silentMode) {
-          this.vibrate([100, 200, 100, 200, 100, 200]);
-        }
-        BackgroundTimer.clearInterval(this.state.ticker);
-
-        this.setState({ ticker: null, modalVisible: true });
-      }
-    }, 1000);
-
-    this.setState({
-      tickerWork: getSecondsFromMinutes(this.state.workInterval),
-      tickerRelax: getSecondsFromMinutes(this.state.relaxInterval),
-      ticker,
-    });
-  };
-
-  closeModal = () => this.setState({ modalVisible: false });
-
   /**
-   * Runs vibration
+   * Runs vibration according to silentMode
    * @param {Number|Number[]} [Timeout = 25] Timeout or sequence of timeouts and delays(v,p,v...)
    */
   vibrate = (timeout = 25) => {
-    Vibration.vibrate(timeout);
+    if (this.state.silentMode) {
+      Vibration.vibrate(timeout);
+    }
     return true;
   };
 
   silentSwitchHandler = (value) => {
     if (value) {
-      this.vibrate(300);
+      Vibration.vibrate(100);
     }
     this.setState({
       silentMode: value,
@@ -165,14 +154,11 @@ export default class App extends Component {
     this.setState({ modalVisible: false });
   };
 
+  closeModal = () => this.setState({ modalVisible: false });
+
   render() {
     const {
-      portraitMode,
-      workInterval,
-      relaxInterval,
-      silentMode,
-      ticker,
-      tickerWork,
+      portraitMode, workInterval, relaxInterval, silentMode, tickerFunc, ticker,
     } = this.state;
 
     return (
@@ -186,7 +172,7 @@ export default class App extends Component {
               onChange={(result) => {
                 this.setState({ workInterval: result });
               }}
-              editable={!ticker}
+              editable={!tickerFunc}
             />
 
             <FormInput
@@ -195,7 +181,7 @@ export default class App extends Component {
               onChange={(result) => {
                 this.setState({ relaxInterval: result });
               }}
-              editable={!ticker}
+              editable={!tickerFunc}
             />
 
             <SwitchContainer>
@@ -206,34 +192,24 @@ export default class App extends Component {
             <ButtonsContainer>
               <FormButton
                 onPress={this.Timer}
-                title={ticker ? 'Stop' : 'Start'}
+                title={tickerFunc ? 'Stop' : 'Start'}
                 disabled={!isInt(workInterval) || !isInt(relaxInterval)}
               />
 
-              <FormButton
-                onPress={this.setDefaultTimers}
-                title="Reset"
-                color="#841584"
-                disabled={!!ticker}
-              />
+              <FormButton onPress={this.setDefaultTimers} title="Reset" color="#841584" disabled={!!tickerFunc} />
             </ButtonsContainer>
           </ContentContainer>
           <TimerContainer>
-            {ticker ? (
+            {tickerFunc ? (
               <TimerDisplay
-                title="Working time remaining:"
-                time={tickerWork}
+                title={ticker.length > 1 ? 'Working time remaining:' : 'Relax time remaining...'}
+                time={ticker[0]}
                 portraitMode={portraitMode}
+                color={ticker.length > 1 ? null : 'green'}
               />
             ) : (
-              <Text>Some help text</Text>
+              <Text style={{ textAlign: 'center' }}>&nbsp;</Text>
             )}
-
-            <Text>
-              Work: {workInterval}, Relax: {relaxInterval}
-            </Text>
-            <Text>TickerWork: {this.state.tickerWork}</Text>
-            <Text>TickerRelax: {this.state.tickerRelax}</Text>
           </TimerContainer>
         </ContentWrapper>
 

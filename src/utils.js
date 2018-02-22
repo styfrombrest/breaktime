@@ -19,4 +19,4 @@ export const isPortrait = () => {
   return width < height;
 };
 
-export const getSecondsFromMinutes = minutes => minutes * 60;
+export const getSecondsFromMinutes = minutes => minutes * 6;

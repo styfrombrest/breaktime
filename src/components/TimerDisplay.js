@@ -19,8 +19,8 @@ const TimerDisplay = (props) => {
 
   return (
     <Container>
-      <Text style={{ fontSize: 24 }}>{props.title}</Text>
-      <TimerText>
+      <Text style={{ fontSize: 24, color: props.color }}>{props.title}</Text>
+      <TimerText style={{ color: props.color }}>
         {duration.asHours() > 1 ? time.format('kk:mm:ss') : time.format('mm:ss')}
       </TimerText>
     </Container>
@@ -31,11 +31,14 @@ export default TimerDisplay;
 
 TimerDisplay.propTypes = {
   title: PropTypes.string,
-  time: PropTypes.number.isRequired,
+  time: PropTypes.number,
   portraitMode: PropTypes.bool,
+  color: PropTypes.string,
 };
 
 TimerDisplay.defaultProps = {
+  time: 0,
   title: '',
   portraitMode: false,
+  color: 'grey',
 };

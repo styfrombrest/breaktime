@@ -2,8 +2,6 @@
 
 ## Description
 
-### Applikacja BreakTime
-
 `"Nie wolno siedzieć długo przed komputerem, a więc trzeba zrobić przerwę."`
 
 Stwórz aplikacje która będzie informowała użytkownika o przerwie. Aplikacja musi mieć następną funkcjonalność:
@@ -20,12 +18,24 @@ Stwórz aplikacje która będzie informowała użytkownika o przerwie. Aplikacja
 
 Aplikacja musi działać jak na Androidzie tak i na iOS (nie ma wymagań odnośnie wersji systemu operacyjnego);
 
-## DEV
+## Known issues
 
-`ANDROID_EMULATOR_USE_SYSTEM_LIBS=1 primusrun ./studio.sh`
+* Vibration duration bug. Detected on Xiaomi RN4 Pro, MIUI 9.2, A 7.0
+
+## DEV command tips
 
 `./emulator -list-avds`
+
+`primusrun ./emulator -avd Nexus_HW`
 
 `lsof -i :8081`
 
 `kill -9 PID`
+
+### Release build & deploy to device
+
+`react-native run-android --variant=release`
+
+#### version `GLIBCXX_3.4.21' not found (required by /usr/lib/primus/libGL.so.1)
+
+`cd /Android/emulator/lib64/libstdc++/ && ln -fs /usr/lib/libstdc++.so.6 libstdc++.so.6`

@@ -85,9 +85,10 @@ export default class FormInput extends Component {
               color: error ? colors.error : colors.fontRegular,
             }}
             placeholderTextColor="silver"
+            disableFullscreenUI
             {...props}
           />
-          <ErrorText>{error ? 'Please enter correct time from 0 to 1440 minutes' : ''}</ErrorText>
+          <ErrorText>{error ? 'Please enter correct time from 1 to 1440 minutes' : ''}</ErrorText>
         </Container>
       </InputWrapper>
     );
