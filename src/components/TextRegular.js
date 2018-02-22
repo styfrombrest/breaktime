@@ -1,9 +1,8 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import styled from 'styled-components';
-import { Text } from 'react-native';
 
-const FontedText = styled(Text)`
+const FontedText = styled.Text`
   font-family: 'Lato-Regular';
 `;
 

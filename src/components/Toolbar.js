@@ -1,11 +1,11 @@
 import React from 'react';
 import styled from 'styled-components';
-import { Image, View } from 'react-native';
+import { View } from 'react-native';
 import Text from './TextRegular';
 
 const clockIcon = require('./../../public/clock_icon.png');
 
-const ToolbarWrapper = styled(View)`
+const ToolbarWrapper = styled.View`
   flex-direction: row;
   align-items: center;
   background-color: black;
@@ -13,7 +13,7 @@ const ToolbarWrapper = styled(View)`
   height: 56;
 `;
 
-const TextContainer = styled(View)`
+const TextContainer = styled.View`
   flex: 1;
   flex-direction: row;
   align-items: flex-start;
@@ -25,7 +25,7 @@ const LogoText = styled(Text)`
   padding-left: 10;
 `;
 
-const Logo = styled(Image)`
+const Logo = styled.Image`
   width: 48;
   height: 48;
 `;

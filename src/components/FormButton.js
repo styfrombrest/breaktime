@@ -1,9 +1,9 @@
 import React from 'react';
 import styled from 'styled-components';
 import PropTypes from 'prop-types';
-import { View, Button } from 'react-native';
+import { Button } from 'react-native';
 
-const Container = styled(View)`
+const Container = styled.View`
   flex: 1;
   padding-horizontal: 10;
 `;

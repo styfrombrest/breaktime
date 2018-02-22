@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import styled from 'styled-components';
-import { View, Vibration, Switch, Dimensions } from 'react-native';
+import { Vibration, Switch, Dimensions, Keyboard } from 'react-native';
 import BackgroundTimer from 'react-native-background-timer';
 
 import { setPushNotification, clearPushNotifications } from './src/components/PushNotification';
@@ -13,20 +13,20 @@ import TimerDisplay from './src/components/TimerDisplay';
 import { isInt, isPortrait, getSecondsFromMinutes } from './src/utils';
 
 const DEFAULTS = {
-  workTime: 1,
-  relaxTime: 1,
+  workTime: 55,
+  relaxTime: 5,
 };
 
-const PageContainer = styled(View)`
+const PageContainer = styled.View`
   flex: 1;
   background-color: white;
 `;
 
-const ContentWrapper = styled(View)`
+const ContentWrapper = styled.View`
   flex: 1;
 `;
 
-const ContentContainer = styled(View)`
+const ContentContainer = styled.View`
   flex: 2;
   flex-direction: column;
   justify-content: flex-start;
@@ -36,17 +36,16 @@ const ContentContainer = styled(View)`
 
 const TimerContainer = styled(ContentContainer)`
   align-items: center;
-  justify-content: flex-start;
-  flex: 1.4;
+  flex: 1.7;
 `;
 
-const ButtonsContainer = styled(View)`
+const ButtonsContainer = styled.View`
   flex-direction: row;
   align-items: center;
   height: 80;
 `;
 
-const SwitchContainer = styled(View)`
+const SwitchContainer = styled.View`
   flex-direction: row;
   align-items: center;
   height: 30;
@@ -84,6 +83,7 @@ export default class App extends Component {
   };
 
   Timer = () => {
+    Keyboard.dismiss();
     const { workInterval, relaxInterval, pushNotificationId } = this.state;
     if (!this.state.tickerFunc) {
       // start timer
@@ -128,6 +128,8 @@ export default class App extends Component {
     }
   };
 
+  isRelaxTicker = () => this.state.ticker.length > 1;
+
   /**
    * Runs vibration according to silentMode
    * @param {Number|Number[]} [Timeout = 25] Timeout or sequence of timeouts and delays(v,p,v...)
@@ -150,6 +152,7 @@ export default class App extends Component {
   };
 
   confirmModal = () => {
+    // restart timer
     this.Timer();
     this.setState({ modalVisible: false });
   };
@@ -199,17 +202,16 @@ export default class App extends Component {
               <FormButton onPress={this.setDefaultTimers} title="Reset" color="#841584" disabled={!!tickerFunc} />
             </ButtonsContainer>
           </ContentContainer>
-          <TimerContainer>
+
+          <TimerContainer style={{ justifyContent: portraitMode ? 'flex-start' : 'center' }}>
             {tickerFunc ? (
               <TimerDisplay
-                title={ticker.length > 1 ? 'Working time remaining:' : 'Relax time remaining...'}
+                title={this.isRelaxTicker() ? 'Working time remaining:' : 'Relax time remaining...'}
                 time={ticker[0]}
                 portraitMode={portraitMode}
-                color={ticker.length > 1 ? null : 'green'}
+                color={this.isRelaxTicker() ? null : 'green'}
               />
-            ) : (
-              <Text style={{ textAlign: 'center' }}>&nbsp;</Text>
-            )}
+            ) : null}
           </TimerContainer>
         </ContentWrapper>
 

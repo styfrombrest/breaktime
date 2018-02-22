@@ -1,13 +1,12 @@
 import React, { Component } from 'react';
 import styled from 'styled-components';
 import PropTypes from 'prop-types';
-import { View, TextInput } from 'react-native';
 import { isStringInt } from './../utils';
 import Text from './TextRegular';
 
 const colors = { error: 'red', normal: '#ccc', fontRegular: '#000' };
 
-const InputWrapper = styled(View)`
+const InputWrapper = styled.View`
   height: 60;
   flex-direction: row;
   flex-wrap: nowrap;
@@ -15,7 +14,7 @@ const InputWrapper = styled(View)`
   justify-content: flex-start;
 `;
 
-const FormTextInput = styled(TextInput)`
+const FormTextInput = styled.TextInput`
   width: 60;
   border-width: 1;
   border-color: ${colors.normal};
@@ -26,11 +25,11 @@ const FormTextInput = styled(TextInput)`
   font-size: 16;
 `;
 
-const Container = styled(View)`
+const Container = styled.View`
   flex: 1;
 `;
 
-const ErrorText = styled(Text)`
+const ErrorText = styled.Text`
   font-size: 10;
   color: ${colors.error};
 `;
@@ -98,7 +97,7 @@ export default class FormInput extends Component {
 FormInput.propTypes = {
   text: PropTypes.string,
   placeholder: PropTypes.string,
-  containerStyle: PropTypes.object,
+  containerStyle: PropTypes.object, // eslint-disable-line
   value: PropTypes.oneOfType([PropTypes.number, PropTypes.object]),
   onChange: PropTypes.func.isRequired,
 };

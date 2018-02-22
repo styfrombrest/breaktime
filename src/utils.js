@@ -7,8 +7,7 @@ export const isInt = value => Number.isInteger(value);
  * @param {string} value
  * @returns {bool} true/false
  */
-export const isStringInt = value =>
-  value.length && value.search(/\D/g) === -1 && Number.isInteger(+value);
+export const isStringInt = value => value.length && value.search(/\D/g) === -1 && Number.isInteger(+value);
 
 /**
  * Orientation detection, based on dimensions of screen
@@ -19,4 +18,4 @@ export const isPortrait = () => {
   return width < height;
 };
 
-export const getSecondsFromMinutes = minutes => minutes * 6;
+export const getSecondsFromMinutes = minutes => minutes * 60;

@@ -1,11 +1,10 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import moment from 'moment';
-import { View } from 'react-native';
 import styled from 'styled-components';
 import Text from './TextRegular';
 
-const Container = styled(View)`
+const Container = styled.View`
   align-items: center;
 `;
 
@@ -20,9 +19,7 @@ const TimerDisplay = (props) => {
   return (
     <Container>
       <Text style={{ fontSize: 24, color: props.color }}>{props.title}</Text>
-      <TimerText style={{ color: props.color }}>
-        {duration.asHours() > 1 ? time.format('kk:mm:ss') : time.format('mm:ss')}
-      </TimerText>
+      <TimerText style={{ color: props.color }}>{duration.asHours() > 1 ? time.format('kk:mm:ss') : time.format('mm:ss')}</TimerText>
     </Container>
   );
 };

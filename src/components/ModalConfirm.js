@@ -1,19 +1,19 @@
 import React from 'react';
 import styled from 'styled-components';
 import PropTypes from 'prop-types';
-import { View, Modal } from 'react-native';
+import { Modal } from 'react-native';
 
 import Text from './TextRegular';
 import FormButton from './FormButton';
 
-const ModalWrapper = styled(View)`
+const ModalWrapper = styled.View`
   flex: 1;
   background-color: rgba(0, 0, 0, 0.5);
   justify-content: center;
   align-items: center;
 `;
 
-const Container = styled(View)`
+const Container = styled.View`
   background-color: white;
   border-radius: 5;
   width: 300;
@@ -22,12 +22,12 @@ const Container = styled(View)`
   align-items: center;
 `;
 
-const ButtonContainer = styled(View)`
+const ButtonContainer = styled.View`
   flex-direction: row;
   padding-top: 15;
 `;
 
-const Title = styled(Text)`
+const Title = styled.Text`
   font-weight: 800;
   font-size: 18;
 `;
