@@ -1,6 +1,6 @@
 # BreakTime app
 
-## Description
+## Task
 
 `"Nie wolno siedzieć długo przed komputerem, a więc trzeba zrobić przerwę."`
 
@@ -21,20 +21,29 @@ Aplikacja musi działać jak na Androidzie tak i na iOS (nie ma wymagań odnośn
 #### Requirements
 
 * Android 5.0+
+* Patience
+
+#### Instructions
+
+To start using this app choose working and relax interval then press Start button. The app uses native Android time picker, so it could look differently depending on platform version. Then you'll see running countdown and title of current period: first will be working interval, then - relax interval. When working interval is over you'll receive a push notification. App uses default system sound to notify. If silent mode switcher is active you'll receive push notification with vibration. After ending of relax interval you'll get another push notification and modal popup in the app, which allows you to repeat both intervals again. Default intervals are based on Polish labor law(_Rozporządzenie Ministra Pracy i Polityki Socjalnej z dnia 1.12.1998 r. w sprawie bezpieczeństwa i higieny pracy na stanowiskach wyposażonych w monitory ekranowe_).
+
+Enjoy! :)
 
 #### Known issues
 
-* Vibration duration bug. Detected on Xiaomi RN4 Pro, MIUI 9.2, A 7.0
+* Vibration duration bug. Detected on Xiaomi RN4 Pro, MIUI 9.2, A 7.0.
 
-##№ DEV command tips
+* Countdown sometimes isn't displayed smoothly, because of synchronization between app timer and system time, especially after background working.
+
+* It's impossible to switch silent mode selector after the timer has been started, because of using scheduled push notifications.
+
+* App doesn't support iOS because of lack of devices. For iOS build some components(like `react-native-push-notification`, `react-native-background-timer`) should be configured manually.
+
+### DEV command notes
 
 `./emulator -list-avds`
 
 `primusrun ./emulator -avd Nexus_HW`
-
-`lsof -i :8081`
-
-`kill -9 PID`
 
 #### Release build & deploy to device
 
