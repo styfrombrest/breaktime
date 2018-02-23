@@ -21,7 +21,14 @@ Aplikacja musi działać jak na Androidzie tak i na iOS (nie ma wymagań odnośn
 #### Requirements
 
 * Android 5.0+
-* Patience
+* Development case:
+  * Patience
+  * Node.js (tested on 9.5.0)
+  * NPM
+  * JDK
+  * Android SDK
+  * Android SDK Platform
+  * Android Virtual Device in case of using emulators
 
 #### Instructions
 
@@ -41,13 +48,27 @@ Enjoy! :)
 
 ### DEV command notes
 
+**Last APK builds** could be founded in `/builds/`.
+
+* Clone repo `git clone git@bitbucket.org:sty_from_brest/breaktime.git`
+
+* Install react-native CLI `npm install -g react-native-cli`
+
+* Run android emulator or connect android device to your computer. Check device status by `adb devices`
+
+* Run app:
+  * **dev build**: `react-native run-android`
+  * **production build**: `react-native run-android ----variant=release`
+
+More info: https://facebook.github.io/react-native/docs/getting-started.html
+
+**Important!**: for prod build you should have private signing key. It isn't included in repo, but you can generate it for yourself. More: https://facebook.github.io/react-native/docs/signed-apk-android.html
+
+### Other notes
+
 `./emulator -list-avds`
 
 `primusrun ./emulator -avd Nexus_HW`
-
-#### Release build & deploy to device
-
-`react-native run-android --variant=release`
 
 #### version `GLIBCXX_3.4.21' not found (required by /usr/lib/primus/libGL.so.1)
 
