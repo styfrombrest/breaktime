@@ -1,16 +1,18 @@
 import React, { Component } from 'react';
 import styled from 'styled-components';
-import { Vibration, Switch, Dimensions, Keyboard } from 'react-native';
+import { Vibration, Switch, Dimensions } from 'react-native';
 import BackgroundTimer from 'react-native-background-timer';
 
-import { setPushNotification, clearPushNotifications } from './src/components/PushNotification';
+import moment from 'moment';
+
+import { clearPushNotifications, setSchedulePushNotification } from './src/components/PushNotification';
 import Toolbar from './src/components/Toolbar';
 import Text from './src/components/TextRegular';
 import IntervalEdit from './src/components/IntervalEdit';
 import FormButton from './src/components/FormButton';
 import ModalConfirmRepeat from './src/components/ModalConfirm';
 import TimerDisplay from './src/components/TimerDisplay';
-import { isPortrait, getSecondsFromMinutes } from './src/utils';
+import { isPortrait, getDiffNow } from './src/utils';
 
 const DEFAULTS = {
   workTime: 55,
@@ -60,11 +62,10 @@ export default class App extends Component {
       silentMode: false,
       modalVisible: false,
 
-      ticker: null,
+      scheduleDates: null,
       tickerFunc: null,
       workInterval: DEFAULTS.workTime,
       relaxInterval: DEFAULTS.relaxTime,
-      pushNotificationId: String(Date.now()).substring(6),
     };
 
     // Orientation changing listener
@@ -86,37 +87,40 @@ export default class App extends Component {
   };
 
   Timer = () => {
-    Keyboard.dismiss();
-    const { workInterval, relaxInterval, pushNotificationId } = this.state;
+    clearPushNotifications();
+
+    const { workInterval, relaxInterval } = this.state;
+    // set schedule
+    const scheduleDates = [moment().add(workInterval, 'minutes'), moment().add(workInterval + relaxInterval, 'minutes')];
+
     if (!this.state.tickerFunc) {
       // start timer
       const tickerFunc = BackgroundTimer.setInterval(() => {
-        if (this.state.ticker.length > 0) {
-          const { ticker } = this.state;
-          // ticking
-          ticker[0] -= 1;
-          if (ticker[0] < 0) {
-            // period ended, notify & switching to next
-            ticker.shift();
+        if (scheduleDates.length > 0) {
+          const timeLeft = getDiffNow(scheduleDates[0]);
 
-            if (ticker.length) {
+          if (timeLeft < 0) {
+            // period ended, notify & switching to next
+            scheduleDates.shift();
+            if (scheduleDates.length) {
               // relax time notification
               this.vibrate(500); // fix for A 7.0
-              setPushNotification(pushNotificationId, 'Working time is over, but relax time is started!', this.state.silentMode);
             }
           }
-          this.setState({ ticker });
+          this.setState({ scheduleDates });
         } else {
           // periods are over, notify & clearing
           this.vibrate(1000); // fix for A 7.0
-          setPushNotification(pushNotificationId, 'Relax time is over.', this.state.silentMode);
           BackgroundTimer.clearInterval(this.state.tickerFunc);
-          this.setState({ ticker: null, tickerFunc: null, modalVisible: true });
+          this.setState({ scheduleDates: null, tickerFunc: null, modalVisible: true });
         }
-      }, 1000);
+      }, 500);
+
+      setSchedulePushNotification(scheduleDates[0].toDate(), 'Working time is over, but relax time is started!', this.state.silentMode);
+      setSchedulePushNotification(scheduleDates[1].toDate(), 'Relax time is over.', this.state.silentMode);
 
       this.setState({
-        ticker: [getSecondsFromMinutes(workInterval), getSecondsFromMinutes(relaxInterval)],
+        scheduleDates,
         tickerFunc,
       });
     } else {
@@ -124,13 +128,14 @@ export default class App extends Component {
       clearPushNotifications();
       BackgroundTimer.clearInterval(this.state.tickerFunc);
       this.setState({
-        ticker: null,
+        scheduleDates: null,
         tickerFunc: null,
       });
     }
   };
 
-  isRelaxTicker = () => this.state.ticker && this.state.ticker.length > 1;
+  // check what timer is active(0: work, 1: relax)
+  isRelaxTicker = () => this.state.scheduleDates && this.state.scheduleDates.length > 1;
 
   /**
    * Runs vibration according to silentMode
@@ -163,7 +168,7 @@ export default class App extends Component {
 
   render() {
     const {
-      portraitMode, workInterval, relaxInterval, silentMode, tickerFunc, ticker,
+      portraitMode, workInterval, relaxInterval, silentMode, tickerFunc, scheduleDates,
     } = this.state;
 
     return (
@@ -191,16 +196,11 @@ export default class App extends Component {
 
             <SwitchContainer>
               <Text>Silent Mode: </Text>
-              <Switch onValueChange={this.silentSwitchHandler} value={silentMode} />
+              <Switch onValueChange={this.silentSwitchHandler} value={silentMode} disabled={!!tickerFunc} />
             </SwitchContainer>
 
             <ButtonsContainer>
-              <FormButton
-                onPress={this.Timer}
-                title={tickerFunc ? 'Stop' : 'Start'}
-                disabled={!workInterval || !relaxInterval}
-              />
-
+              <FormButton onPress={this.Timer} title={tickerFunc ? 'Stop' : 'Start'} disabled={!workInterval || !relaxInterval} />
               <FormButton onPress={this.setDefaultTimers} title="Reset" color="#841584" disabled={!!tickerFunc} />
             </ButtonsContainer>
           </ContentContainer>
@@ -209,7 +209,7 @@ export default class App extends Component {
             {tickerFunc ? (
               <TimerDisplay
                 title={this.isRelaxTicker() ? 'Working time remaining:' : 'Relax time remaining...'}
-                time={ticker[0] || 0}
+                time={scheduleDates.length ? getDiffNow(scheduleDates[0]) : 0}
                 portraitMode={portraitMode}
                 color={this.isRelaxTicker() ? null : 'green'}
               />

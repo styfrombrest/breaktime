@@ -24,3 +24,5 @@ export const getSecondsFromMinutes = minutes => minutes * 60;
 export const getDuration = (period, format = 's') => moment.duration(period, format);
 
 export const getTime = (period, format = 's') => moment.utc(getDuration(period, format).asMilliseconds());
+
+export const getDiffNow = (momentDate, format = 'seconds') => momentDate.diff(moment(), format);
