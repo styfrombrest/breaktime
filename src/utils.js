@@ -1,4 +1,5 @@
 import { Dimensions } from 'react-native';
+import moment from 'moment';
 
 export const isInt = value => Number.isInteger(value);
 
@@ -19,3 +20,7 @@ export const isPortrait = () => {
 };
 
 export const getSecondsFromMinutes = minutes => minutes * 60;
+
+export const getDuration = (period, format = 's') => moment.duration(period, format);
+
+export const getTime = (period, format = 's') => moment.utc(getDuration(period, format).asMilliseconds());

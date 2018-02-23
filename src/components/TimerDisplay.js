@@ -1,16 +1,15 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-import moment from 'moment';
 import styled from 'styled-components';
 import Text from './TextRegular';
+import { getTime } from './../utils';
 
 const Container = styled.View`
   align-items: center;
 `;
 
 const TimerDisplay = (props) => {
-  const duration = moment.duration(props.time, 's');
-  const time = moment.utc(duration.asMilliseconds());
+  const time = getTime(props.time, 's');
 
   const TimerText = styled(Text)`
     font-size: ${props.portraitMode ? 82 : 64};
@@ -19,7 +18,7 @@ const TimerDisplay = (props) => {
   return (
     <Container>
       <Text style={{ fontSize: 24, color: props.color }}>{props.title}</Text>
-      <TimerText style={{ color: props.color }}>{duration.asHours() > 1 ? time.format('kk:mm:ss') : time.format('mm:ss')}</TimerText>
+      <TimerText style={{ color: props.color }}>{time.format('HH') > 0 ? time.format('kk:mm:ss') : time.format('mm:ss')}</TimerText>
     </Container>
   );
 };

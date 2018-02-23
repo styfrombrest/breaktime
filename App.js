@@ -6,11 +6,11 @@ import BackgroundTimer from 'react-native-background-timer';
 import { setPushNotification, clearPushNotifications } from './src/components/PushNotification';
 import Toolbar from './src/components/Toolbar';
 import Text from './src/components/TextRegular';
-import FormInput from './src/components/FormInput';
+import IntervalEdit from './src/components/IntervalEdit';
 import FormButton from './src/components/FormButton';
 import ModalConfirmRepeat from './src/components/ModalConfirm';
 import TimerDisplay from './src/components/TimerDisplay';
-import { isInt, isPortrait, getSecondsFromMinutes } from './src/utils';
+import { isPortrait, getSecondsFromMinutes } from './src/utils';
 
 const DEFAULTS = {
   workTime: 55,
@@ -73,6 +73,9 @@ export default class App extends Component {
         portraitMode: isPortrait(),
       });
     });
+
+    // stop previous timers
+    BackgroundTimer.stopBackgroundTimer();
   }
 
   setDefaultTimers = () => {
@@ -90,7 +93,6 @@ export default class App extends Component {
       const tickerFunc = BackgroundTimer.setInterval(() => {
         if (this.state.ticker.length > 0) {
           const { ticker } = this.state;
-
           // ticking
           ticker[0] -= 1;
           if (ticker[0] < 0) {
@@ -128,7 +130,7 @@ export default class App extends Component {
     }
   };
 
-  isRelaxTicker = () => this.state.ticker.length > 1;
+  isRelaxTicker = () => this.state.ticker && this.state.ticker.length > 1;
 
   /**
    * Runs vibration according to silentMode
@@ -169,22 +171,22 @@ export default class App extends Component {
         <Toolbar />
         <ContentWrapper style={{ flexDirection: portraitMode ? 'column' : 'row' }}>
           <ContentContainer>
-            <FormInput
-              text="Working time, minutes:"
+            <IntervalEdit
+              text="Working time:"
               value={workInterval}
               onChange={(result) => {
                 this.setState({ workInterval: result });
               }}
-              editable={!tickerFunc}
+              disabled={!!tickerFunc}
             />
 
-            <FormInput
-              text="Relax time, minutes:"
+            <IntervalEdit
+              text="Relax time:"
               value={relaxInterval}
               onChange={(result) => {
                 this.setState({ relaxInterval: result });
               }}
-              editable={!tickerFunc}
+              disabled={!!tickerFunc}
             />
 
             <SwitchContainer>
@@ -196,7 +198,7 @@ export default class App extends Component {
               <FormButton
                 onPress={this.Timer}
                 title={tickerFunc ? 'Stop' : 'Start'}
-                disabled={!isInt(workInterval) || !isInt(relaxInterval)}
+                disabled={!workInterval || !relaxInterval}
               />
 
               <FormButton onPress={this.setDefaultTimers} title="Reset" color="#841584" disabled={!!tickerFunc} />
@@ -207,7 +209,7 @@ export default class App extends Component {
             {tickerFunc ? (
               <TimerDisplay
                 title={this.isRelaxTicker() ? 'Working time remaining:' : 'Relax time remaining...'}
-                time={ticker[0]}
+                time={ticker[0] || 0}
                 portraitMode={portraitMode}
                 color={this.isRelaxTicker() ? null : 'green'}
               />

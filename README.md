@@ -18,11 +18,15 @@ Stwórz aplikacje która będzie informowała użytkownika o przerwie. Aplikacja
 
 Aplikacja musi działać jak na Androidzie tak i na iOS (nie ma wymagań odnośnie wersji systemu operacyjnego);
 
-## Known issues
+#### Requirements
+
+* Android 5.0+
+
+#### Known issues
 
 * Vibration duration bug. Detected on Xiaomi RN4 Pro, MIUI 9.2, A 7.0
 
-## DEV command tips
+##№ DEV command tips
 
 `./emulator -list-avds`
 
@@ -32,7 +36,7 @@ Aplikacja musi działać jak na Androidzie tak i na iOS (nie ma wymagań odnośn
 
 `kill -9 PID`
 
-### Release build & deploy to device
+#### Release build & deploy to device
 
 `react-native run-android --variant=release`
 
