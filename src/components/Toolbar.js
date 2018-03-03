@@ -1,6 +1,6 @@
 import React from 'react';
 import styled from 'styled-components';
-import { View } from 'react-native';
+import { View, Platform } from 'react-native';
 import Text from './TextRegular';
 
 const clockIcon = require('./../../public/clock_icon.png');
@@ -10,7 +10,8 @@ const ToolbarWrapper = styled.View`
   align-items: center;
   background-color: black;
   padding-horizontal: 5;
-  height: 56;
+  height: ${Platform.select({ios: `76`, android: `56`})};
+  padding-top: ${Platform.select({ios: `20`, android: `0`})};
 `;
 
 const TextContainer = styled.View`
