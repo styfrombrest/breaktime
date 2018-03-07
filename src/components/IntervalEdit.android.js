@@ -45,7 +45,7 @@ const IntervalEdit = (props) => {
               });
               if (action !== TimePickerAndroid.dismissedAction) {
                 // convert to minutes
-                onChange(hour * 60 + minute); // eslint-disable-line
+                onChange(hour * 60 + minute); // eslint-disable-line no-mixed-operators
               }
             }}
             color={value === 0 ? 'red' : null}

@@ -10,8 +10,8 @@ const ToolbarWrapper = styled.View`
   align-items: center;
   background-color: black;
   padding-horizontal: 5;
-  height: ${Platform.select({ios: `76`, android: `56`})};
-  padding-top: ${Platform.select({ios: `20`, android: `0`})};
+  height: ${Platform.select({ ios: '76', android: '56' })};
+  padding-top: ${Platform.select({ ios: '20', android: '0' })};
 `;
 
 const TextContainer = styled.View`
